@@ -1,35 +1,51 @@
-import { useState, useEffect } from 'react'
+import './App.css';
+import { useEffect, useState } from 'react';
+import Sorting from './components/Sorting/Sorting';
+import fetchPokemon from './api/fetchPokemon';
 
-const App = () => {
+function App() {
   const [pokemon, setPokemon] = useState([]);
   const [sortBy, setSortBy] = useState('');
+  const [filterByType, setFilterByType] = useState('');
+  const [allTypes, setAllTypes] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('https://pokeapi.co/api/v2/pokemon/')
-        if (!response) {
-          throw new Error(`HTTP Error: ${response.status}`)
-        }
-        const data = await response.json();
-        setPokemon(data.results)
-      } catch (error) {
-          console.error('Error fetching pokemon:', error)
-      }
-    }
-    fetchData();
-  });
+    const getPokemon = async () => {
+      const pokemonList = await fetchPokemon();
+      setPokemon(pokemonList);
+
+      // Collect all unique types from Pokémon data
+      const types = [...new Set(pokemonList.flatMap((p) => p.type))];
+      setAllTypes(types);
+    };
+
+    getPokemon();
+  }, []);
+
+  console.log(pokemon)
+
+  // Apply type filter
+  let filteredPokemon = [...pokemon];
+  if (filterByType) {
+    filteredPokemon = filteredPokemon.filter((poke) => poke.type.includes(filterByType));
+  }
+
+  // Apply stat sorting
+  if (sortBy) {
+    filteredPokemon.sort((a, b) => b[sortBy] - a[sortBy]); // Descending order
+  }
 
   return (
     <>
-      {pokemon.map((poke) => (
-        <p>{poke.name}</p>
+      <Sorting setSortBy={setSortBy} setFilterByType={setFilterByType} types={allTypes} />
+      {filteredPokemon.map((poke, index) => (
+        <div key={index}>
+          <p>{poke.name}</p>
+          <img src={poke.sprite} alt={poke.name} />
+        </div>
       ))}
     </>
-  )
+  );
 }
 
-export default App
-
-// https://pokeapi.co/api/v2/pokemon/
-// ask about offset
+export default App;
