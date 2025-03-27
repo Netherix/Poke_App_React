@@ -1,8 +1,8 @@
 const fetchPokemon = async () => {
   try {
-    const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=500'); // Adjust limit as needed
+    const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=500')
     if (!response.ok) {
-      throw new Error(`HTTP error: ${response.status}`);
+      throw new Error(`HTTP error: ${response.status}`)
     }
     const data = await response.json();
 
@@ -14,21 +14,23 @@ const fetchPokemon = async () => {
         return {
           name: poke.name,
           sprite: details.sprites.front_default,
-          attack: details.stats.find(stat => stat.stat.name === 'attack').base_stat,
-          hp: details.stats.find(stat => stat.stat.name === 'hp').base_stat,
-          speed: details.stats.find(stat => stat.stat.name === 'speed').base_stat,
-          defense: details.stats.find(stat => stat.stat.name === 'defense').base_stat,
-          type: details.types.map(t => t.type.name), // Array of types
-        };
+          hp: details.stats[0].base_stat,
+          attack: details.stats[1].base_stat,
+          defense: details.stats[2].base_stat,
+          specialAttack: details.stats[3].base_stat,
+          specialDefense: details.stats[4].base_stat,
+          speed: details.stats[5].base_stat,
+          type: details.types.map(t => t.type.name),
+        }
       })
-    );
-
-    // Sort alphabetically (A-Z)
-    return pokemonDetails.sort((a, b) => a.name.localeCompare(b.name));
+    )
+    return pokemonDetails;
+    
   } catch (error) {
-    console.error('Error fetching Pokémon:', error);
-    return [];
+      console.error('Error fetching pokemon:', error);
+      return [];
   }
-};
+
+}
 
 export default fetchPokemon;

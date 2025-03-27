@@ -1,51 +1,46 @@
-import './App.css';
-import { useEffect, useState } from 'react';
-import Sorting from './components/Sorting/Sorting';
-import fetchPokemon from './api/fetchPokemon';
+import React, { useState, useEffect } from "react";
+import fetchPokemon from "./api/fetchPokemon";
+import Sorting from "./components/Sorting/Sorting";
 
-function App() {
+const App = () => {
   const [pokemon, setPokemon] = useState([]);
-  const [sortBy, setSortBy] = useState('');
-  const [filterByType, setFilterByType] = useState('');
+  const [sortBy, setSortBy] = useState("");
   const [allTypes, setAllTypes] = useState([]);
 
   useEffect(() => {
-    const getPokemon = async () => {
-      const pokemonList = await fetchPokemon();
-      setPokemon(pokemonList);
+    const fetchPokeData = async () => {
+      const data = await fetchPokemon();
+      setPokemon(data);
 
-      // Collect all unique types from Pokémon data
-      const types = [...new Set(pokemonList.flatMap((p) => p.type))];
-      setAllTypes(types);
+      // Collect all types
+      const types = [...new Set(data.flatMap((p) => p.type))];
+      setAllTypes(types);  // Set the types state
     };
 
-    getPokemon();
+    fetchPokeData();
   }, []);
 
+  console.log(allTypes)
   console.log(pokemon)
 
-  // Apply type filter
-  let filteredPokemon = [...pokemon];
-  if (filterByType) {
-    filteredPokemon = filteredPokemon.filter((poke) => poke.type.includes(filterByType));
-  }
-
-  // Apply stat sorting
-  if (sortBy) {
-    filteredPokemon.sort((a, b) => b[sortBy] - a[sortBy]); // Descending order
+  let sortPokemon = [...pokemon];
+  if (sortBy === "alphabetical") {
+    sortPokemon.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sortBy) {
+    sortPokemon.sort((a, b) => b[sortBy] - a[sortBy]);
   }
 
   return (
-    <>
-      <Sorting setSortBy={setSortBy} setFilterByType={setFilterByType} types={allTypes} />
-      {filteredPokemon.map((poke, index) => (
-        <div key={index}>
+    <div>
+      <Sorting setSortBy={setSortBy} />
+      {sortPokemon.map((poke) => (
+        <div key={poke.name}>
           <p>{poke.name}</p>
-          <img src={poke.sprite} alt={poke.name} />
+          <img src={poke.sprite} alt={poke.name} style={{ height: "100px", width: "100px" }} />
         </div>
       ))}
-    </>
+    </div>
   );
-}
+};
 
 export default App;

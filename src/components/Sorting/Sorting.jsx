@@ -1,24 +1,18 @@
-const Sorting = ({ setSortBy, setFilterByType, types }) => {
+import React from 'react';
+
+const Sorting = ({ setSortBy }) => {
   return (
     <>
-      {/* Type Filter */}
-      <select onChange={(e) => setFilterByType(e.target.value)}>
-        <option value="">All Types</option>
-        {types.map((type) => (
-          <option key={type} value={type}>
-            {type}
-          </option>
-        ))}
-      </select>
-
-      {/* Stat Sorting */}
       <select onChange={(e) => setSortBy(e.target.value)}>
-          <option value="">Alphabetical (Default)</option>
-          <option value="attack">Attack</option>
-          <option value="hp">HP</option>
-          <option value="speed">Speed</option>
-          <option value="defense">Defense</option>
-        </select>
+        <option value="">Default</option>
+        <option value="alphabetical">Alphabetical</option>
+        <option value="hp">HP</option>
+        <option value="attack">Attack</option>
+        <option value="defense">Defense</option>
+        <option value="specialAttack">Special Attack</option>
+        <option value="specialDefense">Special Defense</option>
+        <option value="speed">Speed</option>
+      </select>
     </>
   );
 };
